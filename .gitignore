@@ -1,0 +1,16 @@
+# Local
+.DS_Store
+*.local
+*.log*
+
+# Dist
+node_modules
+dist
+dist-ssr
+
+# Tanstack
+.tanstack
+
+# Editor
+.vscode/*
+!.vscode/extensions.json
