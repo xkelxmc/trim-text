@@ -41,3 +41,35 @@ export function trimText(text: string, options?: TrimOptions) {
   const processed = options?.claudeCodeMode ? dedent(lines) : lines
   return processed.join("\n").replace(/\n{3,}/g, "\n\n")
 }
+
+export function getDedentAmounts(text: string) {
+  const lines = text.split("\n")
+  const nonEmpty = lines
+    .map((line, i) => ({ line, i }))
+    .filter(({ line }) => line.trimEnd().length > 0)
+
+  if (nonEmpty.length === 0) return lines.map(() => 0)
+
+  const trimmedLines = lines.map((l) => l.trimEnd())
+  const minAll = Math.min(
+    ...nonEmpty.map(({ line }) => getIndent(line.trimEnd())),
+  )
+
+  if (minAll > 0) {
+    return trimmedLines.map((line) => (line.length > 0 ? minAll : 0))
+  }
+
+  const firstIdx = nonEmpty[0].i
+  const rest = nonEmpty.filter(({ i }) => i !== firstIdx)
+  if (rest.length === 0) return lines.map(() => 0)
+
+  const minRest = Math.min(
+    ...rest.map(({ line }) => getIndent(line.trimEnd())),
+  )
+  if (minRest <= 0) return lines.map(() => 0)
+
+  return trimmedLines.map((line, i) => {
+    if (i === firstIdx || line.length === 0) return 0
+    return minRest
+  })
+}

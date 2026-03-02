@@ -4,17 +4,24 @@ interface HighlightedTextareaProps {
   value: string
   onChange: (value: string) => void
   placeholder: string
+  dedentAmounts?: number[]
 }
 
-function highlightLines(text: string) {
+function highlightLines(text: string, dedentAmounts?: number[]) {
   if (!text) return null
   const lines = text.split("\n")
   return lines.map((line, i) => {
     const trimmed = line.trimEnd()
     const trailing = line.slice(trimmed.length)
+    const dedent = dedentAmounts?.[i] ?? 0
+    const leading = dedent > 0 ? trimmed.slice(0, dedent) : ""
+    const middle = dedent > 0 ? trimmed.slice(dedent) : trimmed
     return (
       <span key={i}>
-        {trimmed}
+        {leading && (
+          <span className="bg-red-500/30 rounded-sm">{leading}</span>
+        )}
+        {middle}
         {trailing && (
           <span className="bg-red-500/30 rounded-sm">{trailing}</span>
         )}
@@ -28,6 +35,7 @@ export function HighlightedTextarea({
   value,
   onChange,
   placeholder,
+  dedentAmounts,
 }: HighlightedTextareaProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const preRef = useRef<HTMLPreElement>(null)
@@ -47,7 +55,7 @@ export function HighlightedTextarea({
         aria-hidden
         className="absolute inset-0 overflow-hidden px-4 py-3 font-mono text-[13px] leading-relaxed tracking-tight text-foreground whitespace-pre-wrap break-words pointer-events-none"
       >
-        {highlightLines(value) || (
+        {highlightLines(value, dedentAmounts) || (
           <span className="text-muted-foreground/50">{placeholder}</span>
         )}
       </pre>

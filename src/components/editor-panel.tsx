@@ -12,6 +12,7 @@ interface EditorPanelProps {
   readOnly?: boolean
   onChange?: (value: string) => void
   className?: string
+  dedentAmounts?: number[]
 }
 
 export function EditorPanel({
@@ -25,6 +26,7 @@ export function EditorPanel({
   readOnly,
   onChange,
   className,
+  dedentAmounts,
 }: EditorPanelProps) {
   return (
     <div className={`editor-panel rounded-none border-0 ${className ?? ""}`}>
@@ -43,6 +45,7 @@ export function EditorPanel({
           value={value}
           onChange={onChange}
           placeholder={placeholder}
+          dedentAmounts={dedentAmounts}
         />
       ) : (
         <textarea

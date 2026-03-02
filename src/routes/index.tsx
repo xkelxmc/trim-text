@@ -10,7 +10,7 @@ import { ThemeToggle } from "@/components/theme-toggle"
 import { useTokens } from "@/hooks/use-tokens"
 import { useStats } from "@/hooks/use-stats"
 import { usePersistedState } from "@/hooks/use-persisted-state"
-import { trimText } from "@/lib/trim-text"
+import { trimText, getDedentAmounts } from "@/lib/trim-text"
 
 export const Route = createFileRoute("/")({
   component: HomePage,
@@ -26,6 +26,7 @@ function HomePage() {
   )
 
   const output = trimText(input, { claudeCodeMode })
+  const dedentAmounts = claudeCodeMode ? getDedentAmounts(input) : undefined
   const stats = useStats(input, output)
   const inputTokens = useTokens(input)
   const outputTokens = useTokens(output)
@@ -108,6 +109,7 @@ function HomePage() {
           placeholder="Paste text with trailing whitespace..."
           onChange={setInput}
           className="border-r max-md:border-b max-md:border-r-0"
+          dedentAmounts={dedentAmounts}
         />
         <EditorPanel
           label="Output"
