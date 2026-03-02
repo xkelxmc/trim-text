@@ -1,37 +1,26 @@
-import { useMemo, useState } from "react"
+import { useState } from "react"
 import { createFileRoute } from "@tanstack/react-router"
-import { Copy, Check, Eraser, Scissors } from "lucide-react"
+import { Copy, Check, Eraser, Scissors, Braces } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { StatsBar } from "@/components/stats-bar"
+import { EditorPanel } from "@/components/editor-panel"
+import { useTokens } from "@/hooks/use-tokens"
+import { useStats } from "@/hooks/use-stats"
+import { trimText } from "@/lib/trim-text"
 
 export const Route = createFileRoute("/")({
   component: HomePage,
 })
 
-function trimText(text: string) {
-  return text
-    .split("\n")
-    .map((line) => line.trimEnd())
-    .join("\n")
-    .replace(/\n{3,}/g, "\n\n")
-}
-
-function useStats(input: string, output: string) {
-  return useMemo(() => {
-    if (!input) return null
-    const charsRemoved = input.length - output.length
-    const inputLines = input.split("\n").length
-    const outputLines = output.split("\n").length
-    const linesRemoved = inputLines - outputLines
-    return { charsRemoved, linesRemoved, inputLines, outputLines }
-  }, [input, output])
-}
-
 function HomePage() {
   const [input, setInput] = useState("")
   const [copied, setCopied] = useState(false)
+  const [showTokens, setShowTokens] = useState(false)
 
   const output = trimText(input)
   const stats = useStats(input, output)
+  const inputTokens = useTokens(input)
+  const outputTokens = useTokens(output)
 
   const handleCopy = async () => {
     await navigator.clipboard.writeText(output)
@@ -41,7 +30,6 @@ function HomePage() {
 
   return (
     <div className="flex h-dvh flex-col">
-      {/* Header */}
       <header className="flex items-center justify-between border-b px-5 py-3">
         <div className="flex items-center gap-2.5">
           <Scissors className="size-4 text-primary" />
@@ -49,14 +37,24 @@ function HomePage() {
         </div>
         <div className="flex items-center gap-1.5">
           {input && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setInput("")}
-            >
-              <Eraser className="size-3.5" />
-              Clear
-            </Button>
+            <>
+              <Button
+                variant={showTokens ? "secondary" : "ghost"}
+                size="sm"
+                onClick={() => setShowTokens(!showTokens)}
+              >
+                <Braces className="size-3.5" />
+                Tokens
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setInput("")}
+              >
+                <Eraser className="size-3.5" />
+                Clear
+              </Button>
+            </>
           )}
           <Button
             variant={copied ? "default" : "outline"}
@@ -74,61 +72,39 @@ function HomePage() {
         </div>
       </header>
 
-      {/* Stats bar */}
-      {stats && stats.charsRemoved > 0 && (
-        <div className="flex items-center gap-4 border-b bg-primary/5 px-5 py-1.5 text-[11px] text-primary">
-          <span className="font-mono font-medium">
-            -{stats.charsRemoved} chars
-          </span>
-          {stats.linesRemoved > 0 && (
-            <span className="font-mono font-medium">
-              -{stats.linesRemoved} lines
-            </span>
-          )}
-          <span className="text-muted-foreground">
-            {stats.outputLines} lines remaining
-          </span>
-        </div>
-      )}
+      <StatsBar
+        charsRemoved={stats?.charsRemoved ?? 0}
+        linesRemoved={stats?.linesRemoved ?? 0}
+        tokensSaved={inputTokens.count - outputTokens.count}
+        outputTokens={outputTokens.count}
+        outputLines={stats?.outputLines ?? 0}
+        inputTokens={inputTokens.count}
+        inputChars={input.length}
+        hasInput={!!input}
+      />
 
-      {/* Editor panels */}
       <div className="flex min-h-0 flex-1 gap-0 max-md:flex-col">
-        {/* Input */}
-        <div className="editor-panel rounded-none border-0 border-r max-md:border-b max-md:border-r-0">
-          <div className="editor-label">
-            <span>Input</span>
-            {input && (
-              <span className="font-mono text-[10px] tabular-nums text-muted-foreground/70">
-                {input.length} chars
-              </span>
-            )}
-          </div>
-          <textarea
-            placeholder="Paste text with trailing whitespace..."
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            spellCheck={false}
-            autoFocus
-          />
-        </div>
-
-        {/* Output */}
-        <div className="editor-panel rounded-none border-0">
-          <div className="editor-label">
-            <span>Output</span>
-            {output && (
-              <span className="font-mono text-[10px] tabular-nums text-muted-foreground/70">
-                {output.length} chars
-              </span>
-            )}
-          </div>
-          <textarea
-            placeholder="Cleaned result appears here..."
-            value={output}
-            readOnly
-            spellCheck={false}
-          />
-        </div>
+        <EditorPanel
+          label="Input"
+          charCount={input.length}
+          tokenCount={inputTokens.count}
+          tokenParts={inputTokens.parts}
+          showTokens={showTokens}
+          value={input}
+          placeholder="Paste text with trailing whitespace..."
+          onChange={setInput}
+          className="border-r max-md:border-b max-md:border-r-0"
+        />
+        <EditorPanel
+          label="Output"
+          charCount={output.length}
+          tokenCount={outputTokens.count}
+          tokenParts={outputTokens.parts}
+          showTokens={showTokens}
+          value={output}
+          placeholder="Cleaned result appears here..."
+          readOnly
+        />
       </div>
     </div>
   )
