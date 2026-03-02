@@ -1,4 +1,5 @@
 import { TokenView } from "@/components/token-view"
+import { HighlightedTextarea } from "@/components/highlighted-textarea"
 
 interface EditorPanelProps {
   label: string
@@ -37,14 +38,18 @@ export function EditorPanel({
       </div>
       {showTokens ? (
         <TokenView parts={tokenParts} />
+      ) : !readOnly && onChange ? (
+        <HighlightedTextarea
+          value={value}
+          onChange={onChange}
+          placeholder={placeholder}
+        />
       ) : (
         <textarea
           placeholder={placeholder}
           value={value}
-          onChange={onChange ? (e) => onChange(e.target.value) : undefined}
-          readOnly={readOnly}
+          readOnly
           spellCheck={false}
-          autoFocus={!readOnly}
         />
       )}
     </div>
