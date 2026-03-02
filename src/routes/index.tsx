@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button"
 import { StatsBar } from "@/components/stats-bar"
 import { EditorPanel } from "@/components/editor-panel"
 import { ModeSwitch } from "@/components/mode-switch"
+import { GithubStar } from "@/components/github-star"
+import { ThemeToggle } from "@/components/theme-toggle"
 import { useTokens } from "@/hooks/use-tokens"
 import { useStats } from "@/hooks/use-stats"
 import { usePersistedState } from "@/hooks/use-persisted-state"
@@ -40,6 +42,8 @@ function HomePage() {
         <div className="flex items-center gap-2.5">
           <Scissors className="size-4 text-primary" />
           <h1 className="text-sm font-semibold tracking-tight">trim text</h1>
+          <GithubStar />
+          <ThemeToggle />
         </div>
         <div className="flex items-center gap-2.5">
           <ModeSwitch
