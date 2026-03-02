@@ -4,8 +4,10 @@ import { Copy, Check, Eraser, Scissors, Braces } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { StatsBar } from "@/components/stats-bar"
 import { EditorPanel } from "@/components/editor-panel"
+import { ModeSwitch } from "@/components/mode-switch"
 import { useTokens } from "@/hooks/use-tokens"
 import { useStats } from "@/hooks/use-stats"
+import { usePersistedState } from "@/hooks/use-persisted-state"
 import { trimText } from "@/lib/trim-text"
 
 export const Route = createFileRoute("/")({
@@ -16,8 +18,12 @@ function HomePage() {
   const [input, setInput] = useState("")
   const [copied, setCopied] = useState(false)
   const [showTokens, setShowTokens] = useState(false)
+  const [claudeCodeMode, setClaudeCodeMode] = usePersistedState(
+    "claudeCodeMode",
+    false,
+  )
 
-  const output = trimText(input)
+  const output = trimText(input, { claudeCodeMode })
   const stats = useStats(input, output)
   const inputTokens = useTokens(input)
   const outputTokens = useTokens(output)
@@ -35,7 +41,11 @@ function HomePage() {
           <Scissors className="size-4 text-primary" />
           <h1 className="text-sm font-semibold tracking-tight">trim text</h1>
         </div>
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-2.5">
+          <ModeSwitch
+            claudeCodeMode={claudeCodeMode}
+            onChange={setClaudeCodeMode}
+          />
           {input && (
             <>
               <Button
