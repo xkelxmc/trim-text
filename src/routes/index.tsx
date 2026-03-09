@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useMemo, useRef } from "react"
 import { createFileRoute } from "@tanstack/react-router"
 import { Copy, Check, Eraser, Scissors, Braces } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -10,7 +10,8 @@ import { ThemeToggle } from "@/components/theme-toggle"
 import { useTokens } from "@/hooks/use-tokens"
 import { useStats } from "@/hooks/use-stats"
 import { usePersistedState } from "@/hooks/use-persisted-state"
-import { trimText, getDedentAmounts } from "@/lib/trim-text"
+import { trimTextWithMap, getDedentAmounts } from "@/lib/trim-text"
+import { useScrollSync } from "@/hooks/use-scroll-sync"
 
 export const Route = createFileRoute("/")({
   component: HomePage,
@@ -25,9 +26,17 @@ function HomePage() {
     false,
   )
 
-  const output = trimText(input, { claudeCodeMode })
+  const inputRef = useRef<HTMLTextAreaElement>(null)
+  const outputRef = useRef<HTMLTextAreaElement>(null)
+
+  const { text: output, lineMap } = useMemo(
+    () => trimTextWithMap(input, { claudeCodeMode }),
+    [input, claudeCodeMode],
+  )
   const dedentAmounts = claudeCodeMode ? getDedentAmounts(input) : undefined
   const stats = useStats(input, output)
+
+  const { handleInputScroll, handleOutputScroll } = useScrollSync(lineMap, inputRef, outputRef)
   const inputTokens = useTokens(input)
   const outputTokens = useTokens(output)
 
@@ -110,6 +119,8 @@ function HomePage() {
           onChange={setInput}
           className="border-r max-md:border-b max-md:border-r-0"
           dedentAmounts={dedentAmounts}
+          textareaRef={inputRef}
+          onSyncScroll={handleInputScroll}
         />
         <EditorPanel
           label="Output"
@@ -120,6 +131,8 @@ function HomePage() {
           value={output}
           placeholder="Cleaned result appears here..."
           readOnly
+          textareaRef={outputRef}
+          onScroll={handleOutputScroll}
         />
       </div>
     </div>
