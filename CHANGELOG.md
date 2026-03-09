@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] - 2026-03-10
+
+### Added
+
+- Scroll sync between input and output panels via line mapping
+- Line number gutters in both input and output panels
+- Box-drawing compression in Claude Code mode — repeated decorative chars (─═━) collapsed to 3, cell padding trimmed
+- Unit tests with vitest v4 for box-drawing compression
+
+### Changed
+
+- `trimText()` now compresses box-drawing characters before dedent in Claude Code mode
+- `trimTextWithMap()` builds full `LineMap` (inputToOutput + outputToInput) for scroll sync
+- Removed diff output view — trimmed output shown directly without deleted-line markers
+
 ## [1.1.1] - 2026-03-02
 
 ### Fixed
@@ -37,6 +52,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Dark theme with JetBrains Mono and warm amber accent
 - Responsive layout (side-by-side on desktop, stacked on mobile)
 
+[1.2.0]: https://github.com/xkelxmc/trim-text/releases/tag/v1.2.0
 [1.1.1]: https://github.com/xkelxmc/trim-text/releases/tag/v1.1.1
 [1.1.0]: https://github.com/xkelxmc/trim-text/releases/tag/v1.1.0
 [1.0.0]: https://github.com/xkelxmc/trim-text/releases/tag/v1.0.0
