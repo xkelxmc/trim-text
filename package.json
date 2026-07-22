@@ -4,7 +4,8 @@
   "version": "1.2.0",
   "type": "module",
   "scripts": {
-    "dev": "portless trim-text vite",
+    "dev": "vite dev --port 4153",
+    "dev:portless": "portless trim-text vite dev",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
@@ -39,7 +40,6 @@
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.5.2",
     "globals": "^17.4.0",
-    "portless": "^0.4.2",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.56.1",
     "vite": "^7.3.1",

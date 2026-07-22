@@ -51,10 +51,11 @@ src/
 ## Commands
 
 ```bash
-bun run dev      # Start dev server (via portless)
-bun run build    # Type-check + production build
-bun run preview  # Preview production build
-bun run lint     # ESLint
+bun run dev           # Start dev server on port 4153
+bun run dev:portless  # Dev server via portless at trim-text.localhost [don't use unless told]
+bun run build         # Type-check + production build
+bun run preview       # Preview production build
+bun run lint          # ESLint
 ```
 
 ## Conventions
